@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    {% load staticfiles %}
+    <link rel="shortcut icon" href="{% static "favicon.ico" %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="{% static "CSS/bootstrap.css" %}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="{% static "CSS/normalize.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "CSS/jquery.dataTables.css" %}">
+    <link href="{% static "CSS/style.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "CSS/slide_tips.css" %}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="{% static "CSS/jquery.dataTables.css" %}">
+    <script src="{% static "JS/jquery.min.js" %}"></script>
+    <script src="{% static "JS/jquery.dataTables.js" %}"></script>
+    <script src="{% static "JS/bootstrap.min.js" %}"></script>
+    <script src="{% static "JS/auto.js" %}"></script>
+    <script src="{% static "JS/analysis.js" %}"></script>
+    <style>
+        .autocomplete {
+            border: 1px solid rgb(154, 251, 178);
+            background-color: white;
+            text-align: left;
+            position: absolute;
+            z-index: 10;
+        }
+
+        .autocomplete li {
+            list-style-type: none;
+        }
+
+        .clickable {
+            cursor: default;
+        }
+
+        .highlight {
+            background-color: rgba(154, 251, 230, 0.76);
+        }
+    </style>
+</head>
+<body>
+<div style="background-color: rgb(255, 255, 255); height: 250%; width: 100%; position: absolute; z-index: 10; display: none; text-align: center; padding-top: 35%; opacity: 0.6;" id="loading">
+			<img alt src="/static/pic/rolling.gif" style="margin-left:0;">
+</div>
+<br><br>
+{#log图片#}
+{# <img src="{% static "logo/logo.png" %}" alt="logo" style="position: absolute;opacity: 0;filter: alpha(opacity=0);"> #}
+<br><br>
+<!--navbar-->
+<nav class="navbar navbar-default navbar-fixed-top" id="nav">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar"
+                    aria-expanded="true">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            {#<a class="navbar-brand" href="/">GEIMA</a>#}
+            <a class="" href="/" ><img src="{% static "logo/logo.png" %}" width="100" height="100" style="position: absolute;" href="/"></a>
+        </div>
+        <div class="navbar-collapse collapse in" id="myNavbar" aria-expanded="true" style="">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/genesearch">GeneSearch</a></li>
+                <li><a href="/example">Example</a></li>
+                <li><a href="/help">Help</a></li>
+                <li><a href="/about">About</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<br>
+<br>
+
+
+{% block body %}{% endblock %}
+
+<!-- Footer -->
+<br>
+<br>
+
+<div class="container" id="footer">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="footer-border"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 footer-copyright">
+            <p>Copyright © 2019 Yue Yao. <a target="_blank" href="/">Li's Lab</a>. All Rights Reserved.</p>
+        </div>
+    </div>
+</div>
+
+<!-- script -->
+<script src="{% static "JS/clicktrigger_index.js" %}"></script>
+
+</body>
+</html>

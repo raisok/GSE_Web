@@ -1,0 +1,319 @@
+<div class="col-sm-12">
+    <p><strong>Upload a gene list and query it in database.</strong></p>
+    <div class="col-sm-12 collapse" id="upload_gene_introduction" aria-expanded="false"
+         style="height: 0px;">
+        <div class="panel-body">
+            <ul>
+                <p>This feature generates your interest gene expression in different database.</p>
+            </ul>
+            <p>Parameters</p>
+            <ul>
+                <li><strong>Upload Gene List</strong>: Upload a file contain genesymbol, one line one gene symbol.</li>
+                <li><strong>Query GSE database</strong>: Query how many GSE database of a type of disease.
+                </li>
+                <li><strong>Species Selection</strong>: Choose one species you want to search</li>
+                <li><strong>Tissue Selection</strong>: Choose one Tissue you focus on.</li>
+                <li><strong>Disease Selection</strong>: Choose one Disease you focus on.</li>
+                <p class="text-info">Search your interested gene List in the datasets.</p>
+            </ul>
+        </div>
+    </div>
+    <a data-toggle="collapse" data-target="#upload_gene_introduction" href="###" class="collapsed"
+       aria-expanded="false">
+        <p class="text-center">--- Help ---</p>
+    </a>
+    <div class="row">
+        <p></p>
+    </div>
+</div>
+
+<div class="col-sm-4">
+    <div class="col-sm-12">
+        <label for="select">Disease Type</label>
+        <br>
+        <select id="upload_disease_type" name="upload_disease_type"
+        onchange="Get_Next_type('upload_disease_type','Get_species')">
+            <option id="not_upload_disease_data">----</option>
+                <option id="Adipose_differentiation" value="Adipose_differentiation">Adipose differentiation</option>
+                <option id="Glucose_metabolism" value="Glucose_metabolism">Glucose metabolism</option>
+                <option id="Liver_cancer" value="Liver_cancer">Liver cancer</option>
+                <option id="Macrophage" value="Macrophage">Macrophage</option>
+                <option id="Myocardial_hypertrophy" value="Myocardial_hypertrophy">Myocardial hypertrophy</option>
+                <option id="Myocardial_Infarction" value="Myocardial_Infarction">Myocardial Infarction</option>
+                <option id="NASH" value="NASH">NASH</option>
+                <option id="VIH" value="VIH">VIH</option>
+        </select>
+        <span class="help-block">Chose your interest disease in our database.</span>
+    </div>
+
+    <div class="col-sm-12">
+        <label for="select">Species Type</label>
+        <br>
+        <select id="upload_species_type" name="upload_species_type"
+        onchange="Get_Next_type('upload_species_type','Get_tissue')">
+            <option id="not_upload_species_data">----</option>
+        </select>
+        <span class="help-block">Chose your interest species you want to search.</span>
+    </div>
+
+    <div class="col-sm-12">
+        <label for="select">Tissue Select</label>
+        <br>
+        <select id="upload_tissue_type" name="upload_tissue_type">
+            <option id="not_upload_tissue_data">----</option>
+
+        </select>
+    </div>
+</div>
+
+<script>
+        function Get_Selected_Id(gene_general_type) {
+            var pro = document.getElementById(gene_general_type);
+            var SelectedId = pro.options[pro.selectedIndex].id;
+            // console.log("Get_Selected_Id:"+SelectedId);  //测试使用
+            return SelectedId;         //返回selected属性为true的元素的id
+        }
+
+        function Get_Next_type(This_ID, Action) {
+            var Selected_Id = Get_Selected_Id(This_ID);   //Selected_Id用来记录当前被选中的省或市的ID
+            if (Action == 'Get_species')                            //从而可以在下一个级联中加载相应的市或县
+                Get_Species_Data(Selected_Id);
+            else if (Action == 'Get_tissue')
+                Get_Tissue_Data(Selected_Id);
+        }
+
+        function Get_Species_Data(Disease_Selected_Id) {    //这里的Selected_Id应该是被选中的disease的ID
+//            console.log("Province_Selected_Id:"+Province_Selected_Id);   //测试使用
+            if (Disease_Selected_Id == 'not_upload_disease_data') {    //如果选择了"Disease"选项，则表示重置当前species和tissue的选项内容，不会向服务器请求数据
+                $("#upload_species_type").empty();
+                $("#upload_species_type").append("<option id=\"not_upload_species_data\" >----</option>");
+                $("#upload_tissue_type").empty();
+                $("#upload_tissue_type").append("<option id=\"not_upload_tissue_data\" >----</option>");
+            } else {      //否则就会向服务器请求数据
+                $.getJSON('GetSpecies/', {'Disease': Disease_Selected_Id}, function (Species_list) {
+                    Add_Species(Species_list);    //调用添加species选项函数
+                });
+            }
+        }
+
+        //在当前页面添加城市选项
+        function Add_Species(Species_list) {
+            $("#upload_species_type").empty();
+            $("#upload_species_type").append("<option id=\"not_upload_species_data\" >----</option>");
+            $("#upload_tissue_type").empty();
+            $("#upload_tissue_type").append("<option id=\"not_upload_tissue_data\" >----</option>");
+            //上面的两次清空与两次添加是为了保持级联的一致性
+            for (var index in Species_list) {     //获得城市列表中的城市索引
+                //添加内容的同时在option标签中添加对应的城市ID
+                var text = "<option" + " id='" + Species_list[index] + "'>" + Species_list[index] + "</option>";
+                $("#upload_species_type").append(text);
+                // console.log(text);  //用来观察生成的text数据
+            }
+        }
+
+        //向服务器请求县区列表数据并调用添加县区函数
+        function Get_Tissue_Data(Species_Selected_Id) {
+            //           console.log("City_Selected_Id:"+City_Selected_Id);   //测试使用
+            if (Species_Selected_Id == 'not_upload_species_data') {     //如果选择了species选项，则表示重置当前tissue的选项内容，不会向服务器请求数据
+                $("#upload_tissue_type").empty();
+                $("#upload_tissue_type").append("<option id=\"not_upload_tissue_data\" >----</option>");
+                //上面的清空与添加是为了保持级联的一致性
+            } else {   //否则就会向服务器请求数据
+                var Disease_Selected_ID = Get_Selected_Id("upload_disease_type");  //获得被选中disease的ID，从而方便从服务器中加载数据
+                $.getJSON('GetTissue/', {
+                    'Disease': Disease_Selected_ID,
+                    'Species': Species_Selected_Id
+                }, function (Tissue_list) {
+                    // console.log(Tissue_list);    //测试使用
+                    Add_tissue(Tissue_list);
+                });
+            }
+        }
+
+        //在当前页面添加县区选项
+        function Add_tissue(Tissue_list) {
+            $("#upload_tissue_type").empty();
+            $("#upload_tissue_type").append("<option id=\"not_single_tissue_data\" >----</option>");
+            //上面的清空与添加是为了保持级联的一致性
+            for (var index in Tissue_list) {     //获得tissue列表中的县区索引
+                //添加内容的同时在option标签中添加对应的tissue ID
+                var text = "<option" + " id='" + Tissue_list[index] + "'>" + Tissue_list[index] + "</option>";
+                $("#upload_tissue_type").append(text);
+                // console.log(text);  //用来观察生成的text数据
+            }
+        }
+    </script>
+
+<div class="col-sm-4">
+    <div class="col-sm-12">
+        <label>Query GSE database：</label>
+        <textarea class="form-control" rows="10" id="multi_gene_show_database"
+                  name="multi_gene_show_database" readonly></textarea>
+        <button type="button" onclick="multi_gene_show_gse()" class="btn btn-primary"
+                name="show_submit" value="submit"
+                id="show_genes">Query
+        </button>
+        <button type="button" onclick="multi_gene_clear_gse()" class="btn btn-primary"
+                name="clear_submit" value="submit"
+                id="multi_gene_clear_list">Clear
+        </button>
+        <br>
+    </div>
+</div>
+
+<div class="col-sm-4">
+    <div class="col-sm-12">
+        <label>Upload Offical Gene Symbol List：</label>
+        <br>
+        <input type="file" class="input-file" name="upgenelist" id="file_upload">
+        <br>
+        <button type="button" class="btn btn-primary btn-xs" onclick="FileUpload()"
+                name="upload_submit" value="upload_submit"
+                id="upload_gene">Upload
+        </button>
+        <span class="help-block">Input a file contain genesymbol, one line one gene symbol.</span>
+        <button type="button" class="btn btn-primary" onclick="query_upload()"
+                name="query_upload_gene_reset" value="genelists"
+                id="query_upload_gene">Query
+        </button>
+    </div>
+    <br>
+    <div class="row">
+
+    </div>
+    <div class="col-md-12" id="download_result" style="display: none">
+        <hr>
+        <button  id="difffile"
+            class="btn btn-primary btn-xs">DEGs result Download
+        </button>
+        <hr>
+        <button  id="filterdifffile"
+            class="btn btn-primary btn-xs">Filter DEGs result Download
+        </button>
+        <hr>
+        <button  id="expfile"
+            class="btn btn-primary btn-xs">Expression result Download
+        </button>
+    </div>
+</div>
+
+<script src="/static/JS/clear.js"></script>
+<script>
+
+    function query_upload() {
+        var disease_type = $("#upload_disease_type").find("option:selected").val();
+        var species_type = $("#upload_species_type").find("option:selected").val();
+        var tissue_type = $("#upload_tissue_type").find("option:selected").val();
+        var querygenelist = $("#query_upload_gene").val();
+        $.ajax({
+            type: "POST",
+            url: 'upload_gene',
+            data: {
+                'disease_type': disease_type,
+                'species_type': species_type,
+                'tissue_type': tissue_type,
+                'querygenelist': querygenelist
+            },
+            dateType: "json",
+            beforeSend: function () {
+                $("#loading").css('display', 'block');
+            },
+            complete: function () {
+                $("#loading").css('display', 'none');
+            },
+            success: function (result) {
+                console.log(result);
+                {#判断返回的数据类型，如果为字符串就说明后台返回错误，如果为字典就是正确#}
+                console.log($.type(result));
+                if ($.type(result) == "string") {
+                    alert("数据库类型选择错误");
+                    $("#expfile").hide();
+                    $("#difffile").hide();
+                } else {
+                    alert("由于基因过多，请点击按钮下载结果");
+                    var expfile = result['downexp'];
+                    var difffile = result['downdiff'];
+                    var filterdifffile = result['downfilterdiff'];
+                    {#console.log(expfile);#}
+                    {#通过单机来获取下载链接#}
+                    $("#expfile").click(function () {
+                        window.location.href = 'download/?id=' + expfile;
+                    });
+                    $("#difffile").click(function () {
+                        window.location.href = 'download/?id=' + difffile;
+                    });
+                    $("#filterdifffile").click(function () {
+                        window.location.href = 'download/?id=' + filterdifffile;
+                    });
+                    {#控制button是否显示出来#}
+                    // $("#expfile").show();
+                    // $("#difffile").show();
+                    $("#download_result").show();
+                     // var download ="<a download=\"\" href=\"download/?id="+difffile+"\"><span class=\"label label-success\">DEGs Download</span></a>";
+                    // $("#pre_download").html(download);
+                    // $("#pre_download").show();
+                }
+            },
+        });
+
+    }
+
+    function FileUpload() {
+        var form_data = new FormData();
+        var file_info = $('#file_upload')[0].files[0];
+        form_data.append('file', file_info);
+        $.ajax({
+            url: 'query',
+            type: 'POST',
+            data: form_data,
+            processData: false,  // tell jquery not to process the data
+            contentType: false, // tell jquery not to set contentType
+            beforeSend: function () {
+                $("#loading").css('display', 'block');
+            },
+            complete: function () {
+                $("#loading").css('display', 'none');
+            },
+            success: function (callback) {
+                alert("成功上传文件");
+                console.log("Success:" + callback);
+                $("#query_upload_gene").val(callback);
+            }
+        });
+    }
+
+    function multi_gene_show_gse() {
+
+        var disease_type = $("#upload_disease_type").find("option:selected").val();
+        var species_type = $("#upload_species_type").find("option:selected").val();
+        var tissue_type = $("#upload_tissue_type").find("option:selected").val();
+
+        $.ajax({
+            type: "POST",
+            url: 'gse_query',
+            data: {'dstype': disease_type, 'sptype': species_type, 'titype': tissue_type},
+            dateType: "json",
+            beforeSend: function () {
+                $("#loading").css('display', 'block');
+            },
+            complete: function () {
+                $("#loading").css('display', 'none');
+            },
+            success: function (result) {
+                {#alert("成功使用ajax传功了数据");#}
+                {#document.getElementById("show_gene_list").innerHTML = disease_type+"\n"+species_type+"\n"+tissue_type;#}
+                var lis = result['gse'];
+                console.log(result);
+                document.getElementById("multi_gene_show_database").innerHTML = lis.join("\n");
+                $('#multi_gene_show_database').val(lis.join("\n"));
+
+            },
+
+        });
+    }
+
+    function multi_gene_clear_gse() {
+        $("#upload_gene_load").load("upload");
+//        document.getElementById("multi_gene_show_database").innerHTML = "";
+    }
+</script>

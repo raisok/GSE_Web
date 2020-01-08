@@ -1,0 +1,323 @@
+{% extends "base_index.html" %}
+
+{% block body %}
+    <!-- search bar -->
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- <p><a href="###" >Click here</a> to get the extension of <span style="color:red">IMA -->
+		<!--			database -->
+		<!--			introduction</span>.</p> -->
+        </div>
+    </div>
+    <!-- Slide Nav 左边的隐藏表格-->
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"><br>&times;</a>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>IMA datebase</th>
+                <!-- <th>Detail</th> -->
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Glucose metabolism</td>
+                <td>Glucose metabolism</td>
+                <td>Glucose metabolism</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width="250px";
+        }
+        function closeNav() {
+            document.getElementById("mySidenav").style.width="0";
+        }
+    </script>
+
+    <div class="container" id="tab_nav">
+        <!-- 这是功能导航栏 -->
+        <ul class="nav nav-tabs">
+{#            <li class="active"><a id="a_general" href="#general" data-toggle="tab" aria-expanded="true">General</a></li>#}
+            <li ><a id="a_sigene" href="#single" data-toggle="tab" aria-expanded="true">Single Gene</a></li>
+            <li><a id="a_gene_general" href="#gene_general"  data-toggle="tab" aria-expanded="true">Multiple Genes</a></li>
+            <li><a id="a_upgene" href="#uploadgene"  data-toggle="tab" aria-expanded="true">Gene List</a></li>
+            <li class="dropdown" style="display: none">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">Plot for gene<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a id="a_barplot" href="#barplot" data-toggle="tab" aria-expanded="false">barplot</a>
+                    </li>
+                    <li>
+                        <a id="a_heatmap" href="#heatmap" data-toggle="tab" aria-expanded="false">heatmap</a>
+                    </li>
+                    <li>
+                        <a id="a_volmap" href="#volmap" data-toggle="tab" aria-expanded="false">volmap</a>
+                    </li>
+
+                </ul>
+            </li>
+            <li class="dropdown" style="display: none">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">Cluster for gene<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a id="a_kmeans" href="#kmeans" data-toggle="tab" aria-expanded="false">kmeans</a>
+                    </li>
+                    <li>
+                        <a id="a_pca" href="#pca" data-toggle="tab" aria-expanded="false">pca</a>
+                    </li>
+                    <li>
+                        <a id="a_plsda" href="#plsda" data-toggle="tab" aria-expanded="false">plsda</a>
+                    </li>
+                    <li>
+                        <a id="a_oplsda" href="#oplsda" data-toggle="tab" aria-expanded="false">oplsda</a>
+                    </li>
+                    <li>
+                        <a id="a_keggenrich" href="#oplsda" data-toggle="tab" aria-expanded="false">keggenrich</a>
+                    </li>
+                    <li>
+                        <a id="a_goenrich" href="#oplsda" data-toggle="tab" aria-expanded="false">goenrich</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade panel panel-default " style="display:none" id="general">
+                <div class="panel-body" id="general_load">
+                    {#                    帮助信息#}
+                    <div class="col-sm-12">
+                        <p><strong>Get Gene Expression in database.</strong></p>
+                        <div class="col-sm-12 collapse" id="general_introduction" aria-expanded="false"
+                             style="height: 0px;">
+                            <div class="panel-body">
+                                <ul>
+                                    <p>This feature generates expression table of interest gene list.</p>
+                                </ul>
+                                <p>Parameters</p>
+                                <ul>
+                                    <li><strong>Input Gene Symbol</strong>: Input a gene symbol List of interest.</li>
+                                    <li><strong>Query GSE database</strong>: Query how many GSE database of a type of disease.
+                                    </li>
+                                    <li><strong>Species Selection</strong>: Choose one species you want to search</li>
+                                    <li><strong>Tissue Selection</strong>: Choose one Tissue you focus on.</li>
+                                    <li><strong>Disease Selection</strong>: Choose one Disease you focus on.</li>
+                                    <p class="text-info">Search your interested gene in the datasets.</p>
+
+                                </ul>
+                            </div>
+                        </div>
+                        <a data-toggle="collapse" data-target="#general_introduction" href="###" class="collapsed"
+                           aria-expanded="false">
+                            <p class="text-center">--- Help ---</p>
+                        </a>
+                        <div class="row">
+                            <p></p>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <form action="showtable" method="POST">
+                            {% csrf_token %}
+                            <div class="col-sm-4">
+                                <div class="col-sm-12">
+                                    <label for="select">Disease Type</label>
+                                    <br>
+                                    <select id="disease_type" name="disease_type">
+                                        <option value="Adipose_differentiation">Adipose differentiation</option>
+                                        <option value="Glucose_metabolism">Glucose metabolism</option>
+                                        <option value="Liver_cancer">Liver cancer</option>
+                                        <option value="Macrophage">Macrophage</option>
+                                        <option value="Myocardial_hypertrophy">Myocardial hypertrophy</option>
+                                        <option value="Myocardial_Infarction">Myocardial Infarction</option>
+                                        <option value="NASH">NASH</option>
+                                        <option value="VIH">VIH</option>
+                                    </select>
+                                    <span class="help-block">Chose your interest disease in our database.</span>
+                                </div>
+
+                                <div class="col-sm-12">
+                                    <label for="select">Species Type</label>
+                                    <br>
+                                    <select id="species_type" name="species_type">
+                                        <option value="human">human</option>
+                                        <option value="mouse">mouse</option>
+                                        <option value="rat">rat</option>
+                                        <option value="monkey">monkey</option>
+                                        <option value="pig">pig</option>
+                                    </select>
+                                    <span class="help-block">Chose your interest species you want to search.</span>
+                                </div>
+
+                                <div class="col-sm-12">
+                                    <label for="select">Tissue Select</label>
+                                    <br>
+                                    <select id="tissue_type" name="tissue_type">
+                                        <option value="liver">liver</option>
+                                        <option value="heart">heart</option>
+                                        <option value="adipose">adipose</option>
+                                    </select>
+                                </div>
+                            </div>
+                            {#                    中间的输入框#}
+                            <div class="col-sm-4">
+                                <div class="col-sm-12">
+                                    <label>Input Gene Symbol：</label>
+                                    <br>
+                                    <textarea class="form-control" rows="10" id="input_gene_list"
+                                              name="input_gene_list">{{ preshow }}</textarea>
+                                    <button type="submit" class="btn btn-primary" name="query_submit" value="submit"
+                                            id="query_gene_list">Query
+                                    </button>
+                                    <button type="reset" class="btn btn-primary" name="query_reset"
+                                            id="clear_gene_list">Clear
+                                    </button>
+                                </div>
+                            </div>
+
+                            {#                    右边的输入框#}
+                            <div class="col-sm-4">
+                                <div class="col-sm-12">
+
+                                    <label>Query GSE database：</label>
+                                    <textarea class="form-control" rows="10" id="show_gene_list"
+                                              name="show_gene_list" readonly>{{ showgenelist }}</textarea>
+                                    <button type="button" onclick="show_gse()" class="btn btn-primary"
+                                            name="show_submit" value="submit"
+                                            id="show_genes">Query
+                                    </button>
+                                    <button type="button" onclick="clear_lists()" class="btn btn-primary"
+                                            name="clear_submit" value="submit"
+                                            id="clear_showgene_list">Clear
+                                    </button>
+                                    <br>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+                <script src="/static/JS/clear.js"></script>
+                <script>
+                    function show_gse() {
+
+                        var disease_type = $("#disease_type").find("option:selected").val();
+                        var species_type = $("#species_type").find("option:selected").val();
+                        var tissue_type = $("#tissue_type").find("option:selected").val();
+                        {#用来测试显示按钮的功能#}
+                        {#document.getElementById("show_gene_list").innerHTML = disease_type+"\n"+species_type+"\n"+tissue_type;#}
+
+                        $.ajax({
+                            type: "POST",
+                            url: 'gse_query',
+                            data: {'disease_type': disease_type, 'species_type': species_type, 'tissue_type': tissue_type},
+                            dateType: "json",
+                            success: function (result) {
+                                {#alert("成功使用ajax传功了数据");#}
+                                {#document.getElementById("show_gene_list").innerHTML = disease_type+"\n"+species_type+"\n"+tissue_type;#}
+                                alert("其他数据库还未开放，目前只能使用Liver_cancer数据库");
+                                console.log(result);
+                                var lis = result['Liver_cancer'];
+                                document.getElementById("show_gene_list").innerHTML = lis.join("\n");
+                                console.log(result.status);
+                                console.log(result.message);
+
+                            },
+
+                        });
+                    }
+                    function clear_lists() {
+                        alert("成功清空数据库列表");
+                        document.getElementById("show_gene_list").innerHTML = "";
+                        $('#show_gene_list').val('');
+                    }
+                </script>
+            </div>
+            <div class="tab-pane fade panel panel-default active in " id="single">
+                <div class="panel-body" id="single_gene_load">
+
+                </div>
+            </div>
+            <div class="tab-pane fade panel panel-default" id="uploadgene">
+                <div class="panel-body" id="upload_gene_load">
+
+                </div>
+            </div>
+            <div class="tab-pane fade panel panel-default " id="gene_general">
+                <div class="panel-body" id="gene_general_load">
+                </div>
+            </div>
+            <div class="tab-pane fade panel panel-default " id="barplot">
+                <div class="panel-body" id="barplot_load">
+                </div>
+            </div>
+            <div class="tab-pane fade panel panel-default" id="heatmap">
+                <div class="panel-body" id="heatmap_load">
+                </div>
+            </div>
+            <div class="tab-pane fade panel panel-default" id="volmap">
+                <div class="panel-body" id="volmap_load">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 预览表格结果界面 -->
+    <div class="container panel panel-default" id="pre_div2" style="display: none;">
+    </div>
+
+    <div class="container panel panel-default" id="pre_div" style="display: none;">
+    </div>
+
+    <!-- 预览下载结果界面 -->
+    <div class="container" id="pre_download" style="display: none;">
+    </div>
+
+
+{#    展示某一个基因在不同数据库的差异情况图片#}
+    <div class="container">
+        {% load staticfiles %}
+        <iframe name="fr" id="iframe" style="width: 100%; height: 600px; border: none;display: none;"
+                src="">
+            显示返回的图片
+        </iframe>
+    </div>
+
+    <div class="container " >
+        {% load staticfiles %}
+        <iframe name="fr" id="iframe2" style="width: 100%; height: 600px; border: none;display: none;"
+                src="">
+            显示返回的图片
+        </iframe>
+    </div>
+
+    <script>
+        var tag = 0;
+        $(document).ready(
+            function () {
+                 $("#single_gene_load").load("single");
+            }
+        );
+        // input the options html
+        $('#a_sigene').click(function () {
+            $("#single_gene_load").load("single");
+        });
+        $('#a_upgene').click(function () {
+            $("#upload_gene_load").load("upload");
+        });
+        $('#a_gene_general').click(function () {
+            $("#gene_general_load").load("gene_general2");
+        });
+        $('#a_barplot').click(function () {
+            $("#barplot_load").load("barplot");
+        });
+        $('#a_heatmap').click(function () {
+            $("#heatmap_load").load("heatmap");
+        });
+        $('#a_volmap').click(function () {
+            $("#volmap_load").load("volmap");
+        });
+    </script>
+{% endblock %}

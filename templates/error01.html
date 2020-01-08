@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>错误页面</title>
+    {% load staticfiles %}
+    <link type="text/css" rel="stylesheet" href="{% static "CSS/common.css" %}">
+    <link type="text/css" rel="stylesheet" href="{% static "CSS/error.css" %}">
+
+</head>
+<body>
+    <h1>{{ errorlog }}</h1>
+    <div class="error_main"><a href='/genesearch' class="index">返回查询页面</a></div>
+</body>
+</html>

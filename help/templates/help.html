@@ -1,0 +1,86 @@
+{% extends "base_index.html" %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row">
+            <nav class="col-sm-3" id="myScrollspy">
+                <ul class="nav nav-pills nav-stacked affix-top" data-spy="affix" data-offset-top="0">
+                    <li><a href="#top">Top</a></li>
+                    <li class=""><a href="#qs">Quick start</a></li>
+                    <li class=""><a href="#qs1"> &nbsp; &nbsp; ◕ Parameters</a></li>
+                    <li class=""><a href="#qs2"> &nbsp; &nbsp; ◕ Search</a></li>
+                    <li class=""><a href="#qs3"> &nbsp; &nbsp; ◕ Results</a></li>
+                </ul>
+            </nav>
+            <div class="col-sm-9" id="content">
+                <h1><strong>Introduction</strong></h1>
+                <ul>
+                    <br>
+                    <p>Statement: All the datasets on the server are <span style="color:red;">computed by a standard pipeline</span>
+                        . Use the <span style="color:red;">Google Chrome </span>browser
+                        for best visualization quality.</p>
+                    <p>GEIMA is a web server for query Gene Expression in different GSE data from the NCBI, using a
+                        standard processing pipeline.</p>
+                    <br>
+                </ul>
+
+                <h3 id="qs"><strong>Quick start</strong></h3>
+                <hr>
+
+                <h4 id="qs1">Parameters</h4>
+                <ul>
+                    <li><strong>Disease Type</strong>: Select a disease type.</li>
+                    <li><strong>Species Type</strong>: Select a species type.</li>
+                    <li><strong>Tissue Select</strong>: Select a tissue type.</li>
+                    <br>
+                    <li><strong>Query GSE database</strong>: Select GSE database.</li>
+                    <li><strong>Input Gene Symbol</strong>: Input a official gene symbol.</li>
+                    <br>
+                    <li><strong>All DEGs result download</strong>: download the difference analysis results of gene in all GEO datasets.</li>
+                    <li><strong>Filter DEGs result download</strong>: download the difference analysis results of gene with |log2Foldchange|&gt;log2(1.5) and P value&lt;0.05.</li>
+                    <li><strong>Expression result download</strong>: download the expression results of gene in all GEO datasets.</li>
+                    <br>
+                </ul>
+
+                <h4 id="qs2">Search</h4>
+                <ul>
+                    <li><strong>Input official gene symbol in the "Input Official Gene Symbol" field, chose disease type,species type,tissue
+                        type ，and click the
+                        "Query"button to search for the gene of intrest.</strong></li>
+                    <img class="img-responsive" src="/static/pic/help/1.png">
+                    <li><strong>If you have multiple genes, you can switch to the "Muliple Genes" mode and paste the gene list to the  "Input Official Gene Symbol" field.</strong></li>
+                    <img class="img-responsive" src="/static/pic/help/6.png">
+                    <li><strong>If there are too many genes, you can switch to the "Gene List" mode and upload the gene list file (The gene list file must be in text file format).</strong></li>
+                    <img class="img-responsive" src="/static/pic/help/7.png">
+                    <li><strong>The gene list file template.</strong></li>
+                    <img class="img-responsive" src="/static/pic/help/8.png">
+                    <li><strong>Click the "Query GSE database" button can view the GEO datasets contained in the current database</strong></li>
+                    <img class="img-responsive" src="/static/pic/help/2.png">
+
+
+                </ul>
+
+                <h4 id="qs3">Results</h4>
+                <ul>
+                 <li><strong>Barplot(only show in single gene mode)</strong></li>
+                 <ul>
+                    <p>Barplot shows the Foldchange of gene in the top 20 GEO datasets</p>
+                    <img class="img-responsive" src="/static/pic/help/3.png">
+                </ul>
+                 <li><strong>Table</strong></li>
+                 <ul>
+                    <p>Table shows the difference analysis results of gene in different GEO datasets</p>
+                    <img class="img-responsive" src="/static/pic/help/4.png">
+                </ul>
+                 <li><strong>Download</strong></li>
+                <ul>
+                    <p>The search results can be downloaded through the following links：</p>
+                    <img class="img-responsive" src="/static/pic/help/5.png">
+                </ul>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

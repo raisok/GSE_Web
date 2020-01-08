@@ -1,0 +1,34 @@
+@charset "UTF-8";
+/* CSS Document */
+
+.footer-border {
+  margin-top: 30px;
+  border-top: 1px dashed #ddd;
+}
+.footer-copyright {
+  margin-top: 15px;
+  line-height: 24px;
+  text-align: right;
+}
+.jumbotron { 
+  background-color: #ffffff; /* Orange */
+/*    color: #ffffff;*/
+}
+.container-fluid {
+  padding: 30px 150px;
+}
+.carousel-control.right, .carousel-control.left {
+  background-image: none;
+  color: #dddddd;
+}
+.carousel-indicators li {
+  border-color: #dddddd;
+}
+.carousel-indicators li.active {
+  background-color: #dddddd;
+}
+.carousel-inner > .item > img,
+.carousel-inner > .item > a > img {
+		width: 90%;
+    margin: auto;
+}

@@ -1,0 +1,336 @@
+<div class="col-sm-12">
+    <p><strong>Get Gene Expression in database.</strong></p>
+    <div class="col-sm-12 collapse" id="gene_general_introduction" aria-expanded="false"
+         style="height: 0px;">
+        <div class="panel-body">
+            <ul>
+                <p>This feature generates expression table of interest gene list.</p>
+            </ul>
+            <p>Parameters</p>
+            <ul>
+                <li><strong>Input Gene Symbol</strong>: Input a gene symbol List of interest.</li>
+                <li><strong>Query GSE database</strong>: Query how many GSE database of a type of disease.
+                </li>
+                <li><strong>Species Selection</strong>: Choose one species you want to search</li>
+                <li><strong>Tissue Selection</strong>: Choose one Tissue you focus on.</li>
+                <li><strong>Disease Selection</strong>: Choose one Disease you focus on.</li>
+                <p class="text-info">Search your interested gene in the datasets.</p>
+
+            </ul>
+        </div>
+    </div>
+    <a data-toggle="collapse" data-target="#gene_general_introduction" href="###" class="collapsed"
+       aria-expanded="false">
+        <p class="text-center">--- Help ---</p>
+    </a>
+    <div class="row">
+        <p></p>
+    </div>
+</div>
+
+<div class="col-sm-12">
+
+    <div class="col-sm-4">
+        <div class="col-sm-12">
+            <label for="select">Disease Type</label>
+            <br>
+            <select id="gene_general_disease_type" name="gene_general_disease_type"
+                    onchange="Get_Next_type('gene_general_disease_type','Get_species')">
+                <option id="not_gene_general_disease_data">----</option>
+                <option id="Adipose_differentiation" value="Adipose_differentiation">Adipose differentiation</option>
+                <option id="Glucose_metabolism" value="Glucose_metabolism">Glucose metabolism</option>
+                <option id="Liver_cancer" value="Liver_cancer">Liver cancer</option>
+                <option id="Macrophage" value="Macrophage">Macrophage</option>
+                <option id="Myocardial_hypertrophy" value="Myocardial_hypertrophy">Myocardial hypertrophy</option>
+                <option id="Myocardial_Infarction" value="Myocardial_Infarction">Myocardial Infarction</option>
+                <option id="NASH" value="NASH">NASH</option>
+                <option id="VIH" value="VIH">VIH</option>
+            </select>
+            <span class="help-block">Chose your interest disease in our database.</span>
+        </div>
+
+        <div class="col-sm-12">
+            <label for="select">Species Type</label>
+            <br>
+            <select id="gene_general_species_type" name="gene_general_species_type"
+                    onchange="Get_Next_type('gene_general_species_type','Get_tissue')">
+                <option id="not_gene_general_species_data">----</option>
+            </select>
+            <span class="help-block">Chose your interest species you want to search.</span>
+        </div>
+
+        <div class="col-sm-12">
+            <label for="select">Tissue Select</label>
+            <br>
+            <select id="gene_general_tissue_type" name="gene_general_tissue_type">
+                <option id="not_gene_general_tissue_data">----</option>
+            </select>
+        </div>
+    </div>
+    <script>
+        function Get_Selected_Id(gene_general_type) {
+            var pro = document.getElementById(gene_general_type);
+            var SelectedId = pro.options[pro.selectedIndex].id;
+            // console.log("Get_Selected_Id:"+SelectedId);  //测试使用
+            return SelectedId;         //返回selected属性为true的元素的id
+        }
+
+        function Get_Next_type(This_ID, Action) {
+            var Selected_Id = Get_Selected_Id(This_ID);   //Selected_Id用来记录当前被选中的省或市的ID
+            if (Action == 'Get_species')                            //从而可以在下一个级联中加载相应的市或县
+                Get_Species_Data(Selected_Id);
+            else if (Action == 'Get_tissue')
+                Get_Tissue_Data(Selected_Id);
+        }
+
+        function Get_Species_Data(Disease_Selected_Id) {    //这里的Selected_Id应该是被选中的省份的ID
+//            console.log("Province_Selected_Id:"+Province_Selected_Id);   //测试使用
+            if (Disease_Selected_Id == 'not_gene_general_disease_data') {    //如果选择了"Province"选项，则表示重置当前City和Country的选项内容，不会向服务器请求数据
+                $("#gene_general_species_type").empty();
+                $("#gene_general_species_type").append("<option id=\"not_gene_general_species_data\" >----</option>");
+                $("#gene_general_tissue_type").empty();
+                $("#gene_general_tissue_type").append("<option id=\"not_gene_general_tissue_data\" >----</option>");
+            } else {      //否则就会向服务器请求数据
+                $.getJSON('GetSpecies/', {'Disease': Disease_Selected_Id}, function (Species_list) {
+                    //                    console.log(City_list);      //测试使用
+                    Add_Species(Species_list);    //调用添加城市选项函数
+                });
+            }
+        }
+
+        //在当前页面添加城市选项
+        function Add_Species(Species_list) {
+            $("#gene_general_species_type").empty();
+            $("#gene_general_species_type").append("<option id=\"not_gene_general_species_data\" >----</option>");
+            $("#gene_general_tissue_type").empty();
+            $("#gene_general_tissue_type").append("<option id=\"not_gene_general_tissue_data\" >----</option>");
+            //上面的两次清空与两次添加是为了保持级联的一致性
+            for (var index in Species_list) {     //获得城市列表中的城市索引
+                //添加内容的同时在option标签中添加对应的城市ID
+                var text = "<option" + " id='" + Species_list[index] + "'>" + Species_list[index] + "</option>";
+                $("#gene_general_species_type").append(text);
+                // console.log(text);  //用来观察生成的text数据
+            }
+        }
+
+        //向服务器请求县区列表数据并调用添加县区函数
+        function Get_Tissue_Data(Species_Selected_Id) {
+            //           console.log("City_Selected_Id:"+City_Selected_Id);   //测试使用
+            if (Species_Selected_Id == 'not_gene_general_species_data') {     //如果选择了City选项，则表示重置当前Country的选项内容，不会向服务器请求数据
+                $("#gene_general_tissue_type").empty();
+                $("#gene_general_tissue_type").append("<option id=\"not_gene_general_tissue_data\" >----</option>");
+                //上面的清空与添加是为了保持级联的一致性
+            } else {   //否则就会向服务器请求数据
+                var Disease_Selected_ID = Get_Selected_Id("gene_general_disease_type");  //获得被选中省的ID，从而方便从服务器中加载数据
+                $.getJSON('GetTissue/', {
+                    'Disease': Disease_Selected_ID,
+                    'Species': Species_Selected_Id
+                }, function (Tissue_list) {
+                    // console.log(Tissue_list);    //测试使用
+                    Add_tissue(Tissue_list);
+                });
+            }
+        }
+
+        //在当前页面添加县区选项
+        function Add_tissue(Tissue_list) {
+            $("#gene_general_tissue_type").empty();
+            $("#gene_general_tissue_type").append("<option id=\"not_gene_general_tissue_data\" >----</option>");
+            //上面的清空与添加是为了保持级联的一致性
+            for (var index in Tissue_list) {     //获得县区列表中的县区索引
+                //添加内容的同时在option标签中添加对应的城市ID
+                var text = "<option" + " id='" + Tissue_list[index] + "'>" + Tissue_list[index] + "</option>";
+                $("#gene_general_tissue_type").append(text);
+                // console.log(text);  //用来观察生成的text数据
+            }
+        }
+    </script>
+
+    {#                    右边的输入框#}
+    <div class="col-sm-4">
+        <div class="col-sm-12">
+            <label>Query GSE database：</label>
+            <textarea class="form-control" rows="10" id="gene_general_show_gse_list"
+                      name="gene_general_show_gse_list" readonly></textarea>
+            <button type="submit" onclick="gene_general_show_gse()" class="btn btn-primary"
+                    name="show_submit"
+                    id="show_genes">Query
+            </button>
+            <button type="submit" onclick="gene_general_clear_gse()" class="btn btn-primary"
+                    name="clear_submit"
+                    id="gene_general_clear_showgene_list">Clear
+            </button>
+            <br>
+        </div>
+    </div>
+
+        {#                    中间的输入框#}
+    <div class="col-sm-4">
+        <div class="col-sm-12">
+            <label>Input Offical Gene Symbol：</label>
+            <br>
+            <textarea class="form-control" rows="10" id="gene_general_input_gene_list"
+                      name="gene_general_input_gene_list"></textarea>
+            <button type="button" class="btn btn-primary" name="gene_general_query_submit"
+                    onclick="gene_general_query()"
+                    id="gene_general_query_submit">Query
+            </button>
+            <button type="button" class="btn btn-primary" name="gene_general_query_reset"
+                    onclick="gene_general_clear()"
+                    id="gene_general_query_reset">Clear
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<script src="/static/JS/clear.js"></script>
+<script>
+    function gene_general_show_gse() {
+        var disease_type = $("#gene_general_disease_type").find("option:selected").val();
+        var species_type = $("#gene_general_species_type").find("option:selected").val();
+        var tissue_type = $("#gene_general_tissue_type").find("option:selected").val();
+        $.ajax({
+            type: "POST",
+            url: 'gse_query',
+            data: {'dstype': disease_type, 'sptype': species_type, 'titype': tissue_type},
+            dateType: "json",
+            beforeSend: function () {
+                $("#loading").css('display', 'block');
+            },
+            complete: function () {
+                $("#loading").css('display', 'none');
+            },
+        })
+            .fail(function (xhr, status, errorThrown) {
+                alert("Sorry,there was a problem!");
+            })
+            .always(function (xhr, status) {
+                console.log("Submitted");
+            })
+            .done(function (result) {
+                var lis = result['gse'];
+                // console.log(result);
+                document.getElementById("gene_general_show_gse_list").innerHTML = lis.join("\n");
+                $('#gene_general_show_gse_list').val(lis.join("\n"));
+            })
+    }
+
+    function gene_general_clear_gse() {
+        $("#gene_general_load").load("gene_general2");
+        // document.getElementById("gene_general_show_gse_list").innerHTML = "";
+        // $('#gene_general_show_gse_list').val('');
+        // alert("Clear GSE List");
+    }
+
+    function gene_general_query() {
+        var querygenes = $('#gene_general_input_gene_list').val();
+        var disease_type = $("#gene_general_disease_type").find("option:selected").val();
+        var species_type = $("#gene_general_species_type").find("option:selected").val();
+        var tissue_type = $("#gene_general_tissue_type").find("option:selected").val();
+        var pattern = new RegExp("[\u4E00-\u9FA5]+");
+        var pattern_blank = new RegExp(" ");
+        if (pattern.test(querygenes) || (querygenes === "") || (pattern_blank.test(querygenes))) {
+            alert('基因名可能为空或者包含中文');
+            $("#gene_general_load").load("gene_general2");
+        } else {
+            $.ajax({
+                type: "POST",
+                url: 'general_gene_query',
+                data: {
+                    'disease_type': disease_type,
+                    'species_type': species_type,
+                    'tissue_type': tissue_type,
+                    'query': querygenes
+                },
+                dateType: "json",
+                beforeSend: function () {
+                    $("#loading").css('display', 'block');
+                },
+                complete: function () {
+                    $("#loading").css('display', 'none');
+                },
+            })
+                .done(function (result) {
+                    console.log(result);
+                    console.log($.type(result));
+                    if($.type(result) == "string"){
+                        if( result == "badchose"){
+                            alert("你输入的基因可能存在问题");
+                            $("#gene_general_load").load("gene_general2");
+                        }else {
+                            alert("你查询的基因可能在数据库不满足p值小于0.05或者倍数差异1.5倍");
+                            expfile = result;
+                            var download = "<hr><button  id=\"expfile\" class=\"btn btn-primary btn-xs\">Expression result Download</button>";
+                            $("#pre_download").show();
+                            $("#pre_download").html(download);
+                            $("#expfile").click(function () {
+                                window.location.href = 'download/?id=' + expfile;
+                            });
+                        }
+                    }else{
+                        // console.log(result);
+                        var difffile = result['downdiff'];
+                        $("#pre_div2").show();
+                        $("#pre_div2").html("<table class=\"table table-striped table-bordered table-hover table-checkable order-column\" id=\"sample_1\"><thead><tr><th> Database_type</th><th> gene</th><th> control_mean</th><th> treat_mean</th><th> log2FoldChange</th><th> pvalue</th><th> padj</th></tr></thead><tbody></tbody></table>");
+                        $(document).ready(function () {
+                            $("#sample_1").dataTable(
+                                {
+                                    searching: true,
+                                    destroy: true,
+                                    "ajax": {
+                                        "url": "general_genes_table?name="+difffile,
+                                        "type": "get",
+                                        "dataSrc": "",
+                                    },
+                                    columns: [
+                                        {data: 'Database_type'},
+                                        {data: 'gene'},
+                                        {data:'control_mean'},
+                                        {data:'treat_mean'},
+                                        {data: 'log2FoldChange'},
+                                        {data: 'pvalue'},
+                                        {data: 'padj'},
+                                    ],
+                                }
+                            );
+                        });
+                        var expfile = result['downexp'];
+
+
+                        var download="<hr><button  id=\"difffile\" class=\"btn btn-primary btn-xs\">all DEGs result Download</button>" +
+                            "<hr><button  id=\"filterdifffile\" class=\"btn btn-primary btn-xs\">Filter DEGs result Download</button>" +
+                            "<hr><button  id=\"expfile\" class=\"btn btn-primary btn-xs\">Expression result Download</button><hr>";
+
+                        $("#pre_download").show();
+                        $("#pre_download").html(download);
+                        $("#expfile").click(function () {
+                            window.location.href = 'download/?id=' + expfile;
+                        });
+                        $("#difffile").click(function () {
+                            window.location.href = 'download/?id=' + difffile;
+                        });
+                        $("#filterdifffile").click(function () {
+                            window.location.href = 'download/?id=' + difffile+".filter.xls";
+                        });
+                        alert("显示完成");
+                    }
+
+                })
+                .fail(function (xhr, status, errorThrown) {
+                    alert("Sorry,there was a problem!");
+                })
+                .always(function (xhr, status) {
+                    console.log("Submitted");
+                })
+        }
+    }
+
+    function gene_general_clear() {
+        // document.getElementById("gene_general_input_gene_list").innerHTML = "";
+        // $('#gene_general_input_gene_list').val('');
+        // $("#pre_div2").hide();
+        $("#gene_general_load").load("gene_general2");
+        alert("Clear Gene Symbol List");
+    }
+</script>

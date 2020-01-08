@@ -1,0 +1,69 @@
+{% extends "base_index.html" %}
+
+{% block body %}
+
+{#    提供下载连接#}
+    <div class="col-md-12">
+        <button onclick="window.location.href='download/?id={{ expfile }} ' ">DEGs</button>
+        <br>
+        <br>
+        <button onclick="window.location.href='download/?id={{ difffile }}' ">Expression</button>
+        <h3>DEGs result show in follow table.</h3>
+    </div>
+    <br>
+
+{#    展示某一个基因在不同数据库的差异情况图片#}
+{#    <div class="container">#}
+{#        {% load staticfiles %}#}
+{#        <iframe name="fr" id="iframe" style="width: 100%; height: 600px; border: none;"#}
+{#                src="{% static img %}">#}
+{#            显示返回的图片#}
+{#        </iframe>#}
+{#    </div>#}
+
+{#    分页显示的实现#}
+    <div class="container-fluid" style="overflow:scroll;">
+        <table id="table_id_example" style="min-width:1500px;" class="display ui-responsive dataTable no-footer " role="grid" aria-describedby="table_id_example_info" border="1">
+            <thead>
+            <tr role="row">
+                {% for header in myList %}
+                    <th class="sorting" tabindex="0" aria-controls="table_id_example" rowspan="1" colspan="1"
+                        style="width: 201.6px;"> {{ header }}
+                    </th>
+                {% endfor %}
+            </tr>
+            </thead>
+            {% for context in data_list %}
+                <tr role="row" class="odd">
+                    <td>{{ context.databasetype }}</td>
+                    <td>{{ context.gene_id }}</td>
+                    <td>{{ context.fold }}</td>
+                    <td>{{ context.pvalue }}</td>
+                    <td>{{ context.padjust }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <ul class="pagination">
+            {% if page_object.has_previous %}
+                <li>
+                    <a href="?page={{ page_object.previous_page_number }}" aria-label="Previous"><span
+                            aria-hidden="true">&laquo;</span></a>
+                </li>
+            {% endif %}
+
+            {% for pg in page_object.paginator.page_range %}
+                {% if page_object.number == pg %}
+                    <li class="active"><a href="?page={{ pg }}">{{ pg }}</a></li>
+                {% else %}
+                    <li><a href="?page={{ pg }}">{{ pg }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if page_object.has_next %}
+                <li>
+                    <a href="?page={{ page_object.next_page_number }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+
+{% endblock %}
