@@ -85,9 +85,9 @@ comp_plot <- function(inline_data){
   }
   tgc <- summarySE(mydata,measurevar="value",groupvars=c("gene","stage"))
   tgc[is.na(tgc)] = 0.1
-  tgc$stage <- factor(tgc$stage,levels=unique(mydata$stage))
+  tgc$stage <- factor(tgc$stage,levels=c(sam1,sam2))
   tgc$data <- exp[1,1]
-  tgc$stage <- as.character(tgc$stage)
+  #tgc$stage <- as.character(tgc$stage)
   
   p = as.numeric(as.character(exp$pvalue))
   

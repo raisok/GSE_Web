@@ -35,7 +35,7 @@
         <select id="single_disease_type" name="single_disease_type"
         onchange="Get_Next_type('single_disease_type','Get_species')">
             <option id="not_single_disease_data">----</option>
-                <option id="Adipose_differentiation" value="Adipose_differentiation">Adipose differentiation</option>
+                <!-- <option id="Adipose_differentiation" value="Adipose_differentiation">Adipose differentiation</option> -->
                 <option id="Glucose_metabolism" value="Glucose_metabolism">Glucose metabolism</option>
                 <option id="Liver_cancer" value="Liver_cancer">Liver cancer</option>
                 <option id="Macrophage" value="Macrophage">Macrophage</option>
@@ -248,17 +248,21 @@
                         alert("查询符合条件的结果为空或者查询的方式不正确");
                     } else {
                         var pic = result['pic'];
-                        var difffile = result['downdiff'];
-                        var multiplot = result['multplot'];
+			var difffile = result['downdiff'];
 
+                        <!-- $("#iframe").attr('src', "/static/" + pic); -->
                         $("#iframe").attr('src', "/static/" + pic);
-                        alert("作图完成");
+                        <!-- alert("作图完成"); -->
+                        <!-- $("#iframe").show(); -->
                         $("#iframe").show();
 
+
+			var multiplot = result['multplot'];
                         if (multiplot == "error"){}else {
                             $("#iframe2").attr('src', "/static/" + multiplot);
                             $("#iframe2").show();
                         }
+
                         $("#pre_div2").show();
                         $("#pre_div2").html("<table class=\"table table-striped table-bordered table-hover table-checkable order-column\" id=\"sample_1\"><thead><tr><th> Database_type</th><th> gene</th><th> control_mean</th><th> treat_mean</th><th> log2FoldChange</th><th> pvalue</th><th> padj</th></tr></thead><tbody></tbody></table>");
 
@@ -286,7 +290,7 @@
                         });
 
                         var expfile = result['downexp'];
-
+                        var difffile = result['downdiff'];
 
                         var download="<hr><button  id=\"difffile\" class=\"btn btn-primary btn-xs\">all DEGs result Download</button>" +
                             "<hr><button  id=\"filterdifffile\" class=\"btn btn-primary btn-xs\">Filter DEGs result Download</button>" +

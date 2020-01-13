@@ -20,7 +20,6 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
-import matplotlib.patches as mpatches
 import seaborn as sns
 from datetime import datetime
 import os
@@ -118,41 +117,20 @@ def drawpic_v2(degfilerfile,picpathname,genename):
     draw['color'] = ['b' if x < 0 else 'r' for x in draw['log2FoldChange']]
     #设置每个柱形边框的颜色，p值小于0.05设置为k，也就是黑色
     draw['edge_color'] = ['k' if x < 0.05 else 'none' for x in draw['pvalue']]
-    draw['hatch_color'] = ['/\\' if x < 0.05 else None for x in draw['pvalue']]
 
     print("image is drawing....")
-    for j,i in enumerate(draw.index):
-        plt.barh(j,draw["log2FoldChange"][i],color=draw["color"][i],ec=draw['edge_color'][i],ls='--',lw=1,hatch=draw['hatch_color'][i])
-    # plt.barh(range(len(draw["log2FoldChange"])), draw["log2FoldChange"], color=draw["color"],
-    #          tick_label=draw["Datebase_type"], ec=draw['edge_color'], ls='--', lw=1)
+
+    plt.barh(range(len(draw["log2FoldChange"])), draw["log2FoldChange"], color=draw["color"],
+             tick_label=draw["Datebase_type"], ec=draw['edge_color'], ls='--', lw=1)
 
     plt.gca().set(ylabel='Datebase name', xlabel='Log2(Fold change)')
     plt.title('20 Top FoldChange of Gene ' + str(genename) + ' expression in different dataset')
-    plt.yticks(range(len(draw["log2FoldChange"])),draw["Datebase_type"],fontsize=8)
-
+    plt.yticks(fontsize=8)
     plt.xlim(-txlim - 0.25, txlim + 0.25)
-
-    #单独设置图例
-    red_patch = mpatches.Patch(color='red', label='Up')
-    blue_patch = mpatches.Patch(color='blue',label='Down')
-    hatch_path = mpatches.Patch(color='white',ec='k',ls='--',hatch='/\\',label='Significant')
-    plt.legend(handles=[red_patch,blue_patch,hatch_path],loc="best")
 
     plt.savefig(picpathname+'.png', format='png', dpi=100, bbox_inches='tight')
     plt.savefig(picpathname+'.pdf', format='pdf', dpi=100, bbox_inches='tight')
     plt.close()
-
-#update at 20191220 by yueyao
-def draw_exp_barplot(expfile,resultpath):
-    filename = os.path.basename(expfile)
-    pic_file_name = filename.replace(".xls",".pdf")
-    cmd = "Rscript /home/user/Web/imav2/utils/muti_barplot.r "+expfile+" "+resultpath+"/"+pic_file_name
-    os.system(cmd)
-    if os.path.exists(resultpath+"/"+pic_file_name):
-        return pic_file_name
-    else:
-        return "error"
-
 
 def heatmap(degfilerfile,picpathname):
     df = pd.read_csv(degfilerfile, header=0, sep="\t")

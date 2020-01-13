@@ -95,8 +95,8 @@ def general_genes(request):
             inputgenenum = len(genes)
             #Resultpath.objects.all().delete()
             #Resultpath.objects.create(resultpath=rpath, expfilepath=downexp, difffilepath=downdiff,
-             #                         inputgenenum=inputgenenum,
-             #                         picpath=rpath)
+            #                          inputgenenum=inputgenenum,
+            #                          picpath=rpath)
             #判断diff文件是否有输出
             fr = open(downdiff,'r')
             row=fr.readlines()[1:]
@@ -117,6 +117,9 @@ def general_genes(request):
 def general_genes_table(request):
     if request.method == 'GET':
         resultfilepath=request.GET.get('name')
+#        allresult = Resultpath.objects.all()
+#        for i in allresult:
+#            resultfilepath =i.difffilepath
         dic = []
         print (resultfilepath+".filter.xls")
         fw = open(resultfilepath+".filter.xls",'w')
@@ -167,12 +170,14 @@ def single_gene(request):
             return HttpResponse("error")
         if len(query_gene_symbol) == 0 or len(query_gene_symbol) >= 15:
             return HttpResponse("error")
+            # return render(request, 'error01.html', {'errorlog': "您输入的基因名称有误"})
         elif query_gene_symbol.replace("\r", "").replace("\n", "").encode('UTF-8').isalnum():
             genes = getgenelist(query_gene_symbol)
             genes = map(lambda x: x.upper(), genes)
             genes = tuple(genes)
         else:
             return HttpResponse("error")
+            # return render(request, 'error01.html', {'errorlog': "您输入的基因列表包含非法字符串，请检查你的基因列表"})
         if disease_type in dataset and len(genes) != 0 :
             datapath, rpath, mediapath = createpath()
             gsepath = datapath + "/" + disease_type+"/"+species_type+"/"+tissue_type
@@ -183,12 +188,17 @@ def single_gene(request):
             downdiff = rpath + "/" + degfilename
             logging.warning("exp file is: " + downexp)
             logging.warning("diff file is: " + downdiff)
+            inputgenenum = len(genes)
+#            Resultpath.objects.all().delete()
+#            Resultpath.objects.create(resultpath=rpath, expfilepath=downexp, difffilepath=downdiff,
+#                                      inputgenenum=inputgenenum,
+#                                      picpath=rpath)
             ###### 展示的图片是否需要用过滤后的 #####
             degfilter=rpath+'/'+degfilename+".filter.xls"
             df = pd.read_csv(rpath+'/'+degfilename, header=0, sep="\t")
             df = df[(df['log2FoldChange'] > 0.58496) | (df['log2FoldChange'] < -0.58496)]
             df = df[df['pvalue'] < 0.05 ]
-
+            #df = df[df['padj'] < 0.05]
             df.to_csv(degfilter, header=True, sep="\t", index=False)
             ######
             count = wcnum(rpath+'/'+degfilename)
@@ -196,6 +206,7 @@ def single_gene(request):
                 return HttpResponse("error")
             else:
                 picfile = draw_bar_v2.gettablelist(genes, rpath+'/'+degfilename, mediapath)
+                #picfile = "xxx"
                 barplot_pic = draw_bar_v2.draw_exp_barplot(rpath+'/'+expfilename, mediapath)
                 pdfpic = picfile + '.pdf'
                 picps = {'pic': pdfpic,'downdiff':rpath+"/"+degfilename,'downexp':rpath+"/"+expfilename,'multplot':barplot_pic}
@@ -207,6 +218,9 @@ def single_gene(request):
 @csrf_exempt
 def single_gene_table(request):
     if request.method == 'GET':
+ #       allresult = Resultpath.objects.all()
+ #       for i in allresult:
+ #           resultfilepath =i.difffilepath
         resultfilepath=request.GET.get('name')
         dic = []
         print (resultfilepath+".filter.xls")
@@ -292,6 +306,7 @@ def upload_genes(request):
                 df = pd.read_csv(rpath + '/' + degfilename, header=0, sep="\t")
                 df = df[(df['log2FoldChange'] > 0.58496) | (df['log2FoldChange'] < -0.58496)]
                 df = df[df['pvalue'] < 0.05]
+                #df = df[df['padj'] < 0.05]
                 df.to_csv(degfilter, header=True, sep="\t", index=False)
                 if os.path.exists(downdiff) and os.path.exists(downexp) and os.path.exists(degfilter):
                     filedic={'downexp':downexp,'downdiff':downdiff,'downfilterdiff':degfilter}
@@ -346,6 +361,7 @@ def showtable(request):
             tablepre = DEGs.objects.all()
             resultdata = Resultpath.objects.all()
 
+            # print (resultdata)
             #获取表头
             hlist = ["Database_type", "gene_id", "log2FoldChange", "pvalue", "padj"]
             tablenum = int(resultdata.values('inputgenenum')[0]['inputgenenum'])+1
@@ -505,16 +521,17 @@ def createpath():
     rpath = "/home/user/Web/imav2/result/"+now
     #rpath = "/media/sdc/yueyao/Web/imav2/result/"+now
     mediapath = os.path.dirname(rpath)+"/pic"
-    # if os.path.exists(mediapath):
-    #     shutil.rmtree(mediapath)
-    #     os.makedirs(mediapath)
-    # else:
-    #     os.makedirs(mediapath)
-    # if os.path.exists(rpath):
-    #     shutil.rmtree(rpath)
-    #     os.makedirs(rpath)
-    # else:
-    #     os.makedirs(rpath)
+    #if os.path.exists(mediapath):
+    #    shutil.rmtree(mediapath)
+    #    os.makedirs(mediapath)
+    #else:
+    #    os.makedirs(mediapath)
+    if not os.path.exists(rpath):
+         os.makedirs(rpath)
+    #    shutil.rmtree(rpath)
+    #    os.makedirs(rpath)
+    #else:
+    #    os.makedirs(rpath)
     return datapath,rpath,mediapath
 
 def readFile(fn, buf_size=262144):  # 大文件下载，设定缓存大小
@@ -702,7 +719,8 @@ dataset={
             "Heart":[
                 "GSE1621",
                 "GSE56348",
-                "GSE76"
+                "GSE76",
+                "GSE24242"
             ]
         }
     }

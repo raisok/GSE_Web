@@ -37,7 +37,7 @@
             <select id="gene_general_disease_type" name="gene_general_disease_type"
                     onchange="Get_Next_type('gene_general_disease_type','Get_species')">
                 <option id="not_gene_general_disease_data">----</option>
-                <option id="Adipose_differentiation" value="Adipose_differentiation">Adipose differentiation</option>
+                <!-- <option id="Adipose_differentiation" value="Adipose_differentiation">Adipose differentiation</option> -->
                 <option id="Glucose_metabolism" value="Glucose_metabolism">Glucose metabolism</option>
                 <option id="Liver_cancer" value="Liver_cancer">Liver cancer</option>
                 <option id="Macrophage" value="Macrophage">Macrophage</option>
@@ -296,7 +296,6 @@
                             );
                         });
                         var expfile = result['downexp'];
-
 
                         var download="<hr><button  id=\"difffile\" class=\"btn btn-primary btn-xs\">all DEGs result Download</button>" +
                             "<hr><button  id=\"filterdifffile\" class=\"btn btn-primary btn-xs\">Filter DEGs result Download</button>" +

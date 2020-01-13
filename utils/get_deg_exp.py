@@ -44,6 +44,7 @@ def v_code():
         ret += s
     return ret
 
+
 def get_result(gene,degfilelist,expfilelist,path,resultpath):
     now = datetime.now()
     now=now.strftime('%Y%m%d%H')+str(v_code())
