@@ -9,4 +9,6 @@ $(function () {
     $("#pre_download").hide();
     $("#iframe2").html("");
     $("#iframe2").hide();
+    $("#iframe3").attr('src', "");
+    $("#iframe3").hide();
 });

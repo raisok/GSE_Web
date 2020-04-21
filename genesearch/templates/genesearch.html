@@ -44,41 +44,31 @@
             <li ><a id="a_sigene" href="#single" data-toggle="tab" aria-expanded="true">Single Gene</a></li>
             <li><a id="a_gene_general" href="#gene_general"  data-toggle="tab" aria-expanded="true">Multiple Genes</a></li>
             <li><a id="a_upgene" href="#uploadgene"  data-toggle="tab" aria-expanded="true">Gene List</a></li>
-            <li class="dropdown" style="display: none">
+            <li class="dropdown" >
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">Plot for gene<span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a id="a_barplot" href="#barplot" data-toggle="tab" aria-expanded="false">barplot</a>
-                    </li>
-                    <li>
                         <a id="a_heatmap" href="#heatmap" data-toggle="tab" aria-expanded="false">heatmap</a>
-                    </li>
-                    <li>
-                        <a id="a_volmap" href="#volmap" data-toggle="tab" aria-expanded="false">volmap</a>
-                    </li>
-
-                </ul>
-            </li>
-            <li class="dropdown" style="display: none">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">Cluster for gene<span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a id="a_kmeans" href="#kmeans" data-toggle="tab" aria-expanded="false">kmeans</a>
                     </li>
                     <li>
                         <a id="a_pca" href="#pca" data-toggle="tab" aria-expanded="false">pca</a>
                     </li>
                     <li>
-                        <a id="a_plsda" href="#plsda" data-toggle="tab" aria-expanded="false">plsda</a>
+                        <a id="a_venn" href="#venn" data-toggle="tab" aria-expanded="false">venn</a>
                     </li>
                     <li>
-                        <a id="a_oplsda" href="#oplsda" data-toggle="tab" aria-expanded="false">oplsda</a>
+                        <a id="a_venn2" href="/venn2" data-toggle="tab" aria-expanded="false">venn2</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">Function for gene<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a id="a_goenrich" href="#goenrich" data-toggle="tab" aria-expanded="false">goenrich</a>
                     </li>
                     <li>
-                        <a id="a_keggenrich" href="#oplsda" data-toggle="tab" aria-expanded="false">keggenrich</a>
-                    </li>
-                    <li>
-                        <a id="a_goenrich" href="#oplsda" data-toggle="tab" aria-expanded="false">goenrich</a>
+                        <a id="a_keggenrich" href="#keggenrich" data-toggle="tab" aria-expanded="false">keggenrich</a>
                     </li>
                 </ul>
             </li>
@@ -249,16 +239,24 @@
                 <div class="panel-body" id="gene_general_load">
                 </div>
             </div>
-            <div class="tab-pane fade panel panel-default " id="barplot">
-                <div class="panel-body" id="barplot_load">
+            <div class="tab-pane fade panel panel-default " id="pca">
+                <div class="panel-body" id="pca_load">
                 </div>
             </div>
             <div class="tab-pane fade panel panel-default" id="heatmap">
                 <div class="panel-body" id="heatmap_load">
                 </div>
             </div>
-            <div class="tab-pane fade panel panel-default" id="volmap">
-                <div class="panel-body" id="volmap_load">
+            <div class="tab-pane fade panel panel-default" id="goenrich">
+                <div class="panel-body" id="goenrich_load">
+                </div>
+            </div>
+            <div class="tab-pane fade panel panel-default" id="keggenrich">
+                <div class="panel-body" id="keggenrich_load">
+                </div>
+            </div>
+            <div class="tab-pane fade panel panel-default" id="venn">
+                <div class="panel-body" id="venn_load">
                 </div>
             </div>
         </div>
@@ -293,6 +291,13 @@
         </iframe>
     </div>
 
+    <div class="container " >
+        {% load staticfiles %}
+        <iframe name="fr" id="iframe3" style="width: 100%; height: 600px; border: none;display: none;"
+                src="">
+            显示返回的图片
+        </iframe>
+    </div>
 
     <script>
         var tag = 0;
@@ -311,14 +316,23 @@
         $('#a_gene_general').click(function () {
             $("#gene_general_load").load("gene_general2");
         });
-        $('#a_barplot').click(function () {
-            $("#barplot_load").load("barplot");
+        $('#a_goenrich').click(function () {
+            $("#goenrich_load").load("goenrich");
         });
         $('#a_heatmap').click(function () {
             $("#heatmap_load").load("heatmap");
         });
-        $('#a_volmap').click(function () {
-            $("#volmap_load").load("volmap");
+        $('#a_pca').click(function () {
+            $("#pca_load").load("pca");
+        });
+        $('#a_keggenrich').click(function () {
+            $("#keggenrich_load").load("keggenrich");
+        });
+        $('#a_venn').click(function () {
+            $("#venn_load").load("venn");
+        });
+        $('#a_venn2').click(function () {
+            window.location.href='venn2'
         });
     </script>
 {% endblock %}

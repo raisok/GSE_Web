@@ -1,0 +1,141 @@
+<div class="col-sm-12">
+    <p><strong>go enrichment.</strong></p>
+    <div class="col-sm-12 collapse" id="go_enrich_introduction" aria-expanded="false"
+         style="height: 0px;">
+        <div class="panel-body">
+            <ul>
+                <p>This feature is used for GO Enrichment.</p>
+            </ul>
+            <p>Parameters</p>
+            <ul>
+                <li><strong>Species Type</strong>: .</li>
+            </ul>
+            <ul>
+                <li><strong>Input Offical Gene Symbol</strong>: .</li>
+            </ul>
+        </div>
+    </div>
+    <a data-toggle="collapse" data-target="#go_enrich_introduction" href="###" class="collapsed"
+       aria-expanded="false">
+        <p class="text-center">--- Help ---</p>
+    </a>
+    <div class="col-sm-12">
+        <div>
+            <div class="col-sm-4">
+                <label for="select">Species Type</label>
+                <br>
+                <br>
+                <select id="goenrich_species_type" name="goenrich_species_type">
+                    <option id="hsa">hsa</option>
+                    <option id="mmu">mmu</option>
+                    <option id="rat">rat</option>
+                </select>
+                <br>
+                <br>
+                <span class="help-block">Chose interest species.</span>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="col-sm-12">
+                <label>Input Offical Gene Symbol：</label>
+                <br>
+                <textarea class="form-control" rows="5" id="go_enrich_gene_list"
+                          name="go_enrich_gene_list"></textarea>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="col-sm-12">
+                            <button type="button" class="btn btn-primary" name="go_enrich_submit"
+                        onclick="go_enrich()"
+                        id="go_enrich_submit">GO Enrichment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/JS/clear.js"></script>
+<script>
+    function go_enrich() {
+        var querygenes = $('#go_enrich_gene_list').val();
+        var species_type = $("#goenrich_species_type").find("option:selected").val();
+        var pattern = new RegExp("[\u4E00-\u9FA5]+");
+        var pattern_blank = new RegExp(" ");
+        if (pattern.test(querygenes) || (querygenes === "") || (pattern_blank.test(querygenes))) {
+            alert('基因名可能为空或者包含中文');
+            $("#goenrich_load").load("goenrich");
+        } else {
+            $.ajax({
+                type: "POST",
+                url: 'enrichgo',
+                data: {
+                    'species_type': species_type,
+                    'query': querygenes
+                },
+                dateType: "json",
+                beforeSend: function () {
+                    $("#loading").css('display', 'block');
+                },
+                complete: function () {
+                    $("#loading").css('display', 'none');
+                },
+            })
+                .done(function (result) {
+                    console.log(result);
+                    console.log($.type(result));
+                    if($.type(result) == "string"){
+                        alert("你输入的基因可能存在问题");
+                        $("#goenrich_load").load("goenrich");
+                    }else{
+                        var cc_pic =  result["CC_pic"];
+                        var bp_pic = result["BP_pic"];
+                        var mf_pic = result["MF_pic"];
+
+                        $("#iframe").attr('src', "/static/" + cc_pic);
+                        $("#iframe").show();
+
+                        $("#iframe2").attr('src', "/static/" + bp_pic);
+                        $("#iframe2").show();
+
+                        $("#iframe3").attr('src', "/static/" + mf_pic);
+                        $("#iframe3").show();
+
+
+                        var download="<hr><button  id=\"ccenrich_result\" class=\"btn btn-primary btn-xs\">CC GO enrichment Download</button>" +
+                            "<hr><button  id=\"bpenrich_result\" class=\"btn btn-primary btn-xs\">BP GO enrichment Download</button>" +
+                            "<hr><button  id=\"mfenrich_result\" class=\"btn btn-primary btn-xs\">MF GO enrichment Download</button><hr>";
+
+                        var cc_file =  result["CC_enrich"];
+                        var bp_file = result["BP_enrich"];
+                        var mf_file = result["MF_enrich"];
+
+                        $("#pre_download").show();
+                        $("#pre_download").html(download);
+                        $("#ccenrich_result").click(function () {
+                            window.location.href = 'download/?id=' + cc_file;
+                        });
+                        $("#bpenrich_result").click(function () {
+                            window.location.href = 'download/?id=' + bp_file;
+                        });
+                        $("#mfenrich_result").click(function () {
+                            window.location.href = 'download/?id=' + mf_file;
+                        });
+                        alert("显示完成");
+                    }
+
+                })
+                .fail(function (xhr, status, errorThrown) {
+                    alert("Sorry,there was a problem!");
+                })
+                .always(function (xhr, status) {
+                    console.log("Submitted");
+                })
+        }
+    }
+
+</script>

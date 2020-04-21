@@ -38,5 +38,17 @@ urlpatterns=[
     path('heatmap',views.heatmap),
     path('volmap',views.volmap),
     path('upload',views.upload),
-    path('single',views.single)
+    path('single',views.single),
+    path('venn',views.venn),
+    path('venn_result',views.venn_result),
+    path('draw_pca',views.draw_pca),
+    path('goenrich',views.goenrich),
+    path('enrichgo',views.do_go_enrich),
+    path('keggenrich',views.keggenrich),
+    path('enrichkegg',views.do_kegg_enrich),
+    path('pca',views.pca),
+    path('draw_pca',views.draw_pca),
+    path('upload_fpkm',views.upload_fpkm),
+    path('draw_heatmap',views.draw_heatmap),
+    path('venn2',views.venn2)
 ]

@@ -1,0 +1,150 @@
+<div class="col-sm-12">
+    <p><strong>draw venn.</strong></p>
+    <div class="col-sm-12 collapse" id="draw_venn_introduction" aria-expanded="false"
+         style="height: 0px;">
+        <div class="panel-body">
+            <ul>
+                <p>This feature is used for draw venn.</p>
+            </ul>
+            <p>Parameters</p>
+            <ul>
+                <li><strong>List1 </strong>: Input symbol .</li>
+                <li><strong>List2 </strong>: Input symbol .</li>
+                <li><strong>List3 </strong>: Input symbol .</li>
+                <li><strong>List4 </strong>: Input symbol .</li>
+                <li><strong>List5 </strong>: Input symbol .</li>
+            </ul>
+        </div>
+    </div>
+    <a data-toggle="collapse" data-target="#draw_venn_introduction" href="###" class="collapsed"
+       aria-expanded="false">
+        <p class="text-center">--- Help ---</p>
+    </a>
+    <div class="col-sm-12">
+
+        <div class="col-sm-4">
+            <div class="col-sm-12">
+                <input type="text" class="form-control" id="List1" placeholder="List1"
+               name="list1">
+                <textarea class="form-control" rows="5" id="input_gene_list1"
+                          name="input_gene_list1"></textarea>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="col-sm-12">
+                <input type="text" class="form-control" id="List2" placeholder="List2"
+               name="list2">
+                <textarea class="form-control" rows="5" id="input_gene_list2"
+                          name="input_gene_list2"></textarea>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="col-sm-12">
+                <input type="text" class="form-control" id="List3" placeholder="List3"
+               name="list3">
+                <textarea class="form-control" rows="5" id="input_gene_list3"
+                          name="input_gene_list3"></textarea>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-sm-12">
+
+        <div class="col-sm-4">
+            <div class="col-sm-12">
+                <input type="text" class="form-control" id="List4" placeholder="List4"
+               name="list4">
+                <textarea class="form-control" rows="5" id="input_gene_list4"
+                          name="input_gene_list4"></textarea>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="col-sm-12">
+                <input type="text" class="form-control" id="List5" placeholder="List5"
+               name="list5">
+                <textarea class="form-control" rows="5" id="input_gene_list5"
+                          name="input_gene_list5"></textarea>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="col-sm-12">
+            <button type="button" class="btn btn-primary" onclick="draw_venn()"
+                    name="draw_venn_button" value="draw"
+                    id="draw_venn_button">Plot
+            </button>
+                <button type="button" class="btn btn-primary" onclick="clear_venn()"
+                    name="clear_venn_button" value="draw"
+                    id="draw_venn_button">Clear
+            </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/JS/clear.js"></script>
+<script>
+    function draw_venn() {
+        var List1 = $('#List1').val();
+        var List2 = $('#List2').val();
+        var List3 = $('#List3').val();
+        var List4 = $('#List4').val();
+        var List5 = $('#List5').val();
+        var gene_list1 = $('#input_gene_list1').val();
+        var gene_list2 = $('#input_gene_list2').val();
+        var gene_list3 = $('#input_gene_list3').val();
+        var gene_list4 = $('#input_gene_list4').val();
+        var gene_list5 = $('#input_gene_list5').val();
+
+        $.ajax({
+                type: "POST",
+                url: 'venn_result',
+                data: {
+                    'list1': List1,
+                    'list2': List2,
+                    'list3': List3,
+                    'list4': List4,
+                    'list5': List5,
+                    'gene_list1':gene_list1,
+                    'gene_list2':gene_list2,
+                    'gene_list3':gene_list3,
+                    'gene_list4':gene_list4,
+                    'gene_list5':gene_list5,
+                },
+                dateType: "json",
+                beforeSend: function () {
+                    $("#loading").css('display', 'block');
+                },
+                complete: function () {
+                    $("#loading").css('display', 'none');
+                },
+            })
+            .done(function (result) {
+                    console.log(result);
+                    console.log($.type(result));
+                    if($.type(result) == "string"){
+                        alert("你输入的基因可能存在问题");
+                        $("#venn_load").load("venn");
+                    }else{
+                        // console.log(result);
+                        var vennpic = result['venn_pic'];
+                        $("#iframe").attr('src', "/static/" + vennpic);
+                        $("#iframe").show();
+                    }
+                })
+            .fail(function (xhr, status, errorThrown) {
+                    alert("Sorry,there was a problem!");
+                })
+            .always(function (xhr, status) {
+                    console.log("Submitted");
+                })
+    }
+    function clear_venn() {
+        $("#venn_load").load("venn");
+        alert("Clear Input List");
+    }
+</script>

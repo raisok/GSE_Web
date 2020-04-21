@@ -1,0 +1,132 @@
+<div class="col-sm-12">
+    <p><strong>kegg enrichment.</strong></p>
+    <div class="col-sm-12 collapse" id="kegg_enrich_introduction" aria-expanded="false"
+         style="height: 0px;">
+        <div class="panel-body">
+            <ul>
+                <p>This feature is used for KEGG Enrichment.</p>
+            </ul>
+            <p>Parameters</p>
+            <ul>
+                <li><strong>Species Type</strong>: .</li>
+            </ul>
+            <ul>
+                <li><strong>Input Offical Gene Symbol</strong>: .</li>
+            </ul>
+        </div>
+    </div>
+    <a data-toggle="collapse" data-target="#kegg_enrich_introduction" href="###" class="collapsed"
+       aria-expanded="false">
+        <p class="text-center">--- Help ---</p>
+    </a>
+    <div class="col-sm-12">
+        <div>
+            <div class="col-sm-4">
+                <label for="select">Species Type</label>
+                <br>
+                <br>
+                <select id="kegg_enrich_species_type" name="kegg_enrich_species_type">
+                    <option id="hsa">hsa</option>
+                    <option id="mmu">mmu</option>
+                    <option id="rat">rat</option>
+                </select>
+                <br>
+                <br>
+                <span class="help-block">Chose interest species.</span>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="col-sm-12">
+                <label>Input Offical Gene Symbol：</label>
+                <br>
+                <textarea class="form-control" rows="5" id="kegg_enrich_gene_list"
+                          name="kegg_enrich_gene_list"></textarea>
+
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="col-sm-12">
+                            <button type="button" class="btn btn-primary" name="kegg_enrich_submit"
+                        onclick="kegg_enrich()"
+                        id="kegg_enrich_submit">KEGG Enrichment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/JS/clear.js"></script>
+<script>
+    function kegg_enrich() {
+        var querygenes = $('#kegg_enrich_gene_list').val();
+        var species_type = $("#kegg_enrich_species_type").find("option:selected").val();
+        var pattern = new RegExp("[\u4E00-\u9FA5]+");
+        var pattern_blank = new RegExp(" ");
+        if (pattern.test(querygenes) || (querygenes === "") || (pattern_blank.test(querygenes))) {
+            alert('基因名可能为空或者包含中文');
+            $("#keggenrich_load").load("keggenrich");
+        } else {
+            $.ajax({
+                type: "POST",
+                url: 'enrichkegg',
+                data: {
+                    'species_type': species_type,
+                    'query': querygenes
+                },
+                dateType: "json",
+                beforeSend: function () {
+                    $("#loading").css('display', 'block');
+                },
+                complete: function () {
+                    $("#loading").css('display', 'none');
+                },
+            })
+                .done(function (result) {
+                    console.log(result);
+                    console.log($.type(result));
+                    if($.type(result) == "string"){
+                        alert("你输入的基因可能存在问题");
+                        $("#keggenrich_load").load("keggenrich");
+                    }else{
+                        var bar_pic = result["kegg_bar"];
+                        var category_pic = result["kegg_category"];
+
+                        $("#iframe").attr('src', "/static/" + bar_pic);
+                        $("#iframe").show();
+
+                        $("#iframe2").attr('src', "/static/" + category_pic);
+                        $("#iframe2").show();
+
+                        var download="<hr><button  id=\"keggenrich_result\" class=\"btn btn-primary btn-xs\">KEGG enrichment Download</button>" +
+                            "<hr><button  id=\"unfil_keggenrich_result\" class=\"btn btn-primary btn-xs\">unfiltered KEGG enrichment Download</button><hr>";
+
+                        var kegg_file =  result["kegg_enrich"];
+                        var unfilter_kegg = result["unfiltered_kegg_enrich"];
+
+                        $("#pre_download").show();
+                        $("#pre_download").html(download);
+                        $("#keggenrich_result").click(function () {
+                            window.location.href = 'download/?id=' + cc_file;
+                        });
+                        $("#unfil_keggenrich_result").click(function () {
+                            window.location.href = 'download/?id=' + bp_file;
+                        });
+                        alert("显示完成");
+                    }
+
+                })
+                .fail(function (xhr, status, errorThrown) {
+                    alert("Sorry,there was a problem!");
+                })
+                .always(function (xhr, status) {
+                    console.log("Submitted");
+                })
+        }
+    }
+
+</script>

@@ -1,0 +1,138 @@
+<div class="col-sm-12">
+    <p><strong>draw pca.</strong></p>
+    <div class="col-sm-12 collapse" id="draw_pca_introduction" aria-expanded="false"
+         style="height: 0px;">
+        <div class="panel-body">
+            <ul>
+                <p>This feature is used for draw pca.</p>
+            </ul>
+            <p>Parameters</p>
+            <ul>
+                <li><strong>Gene expression file</strong>: UpLoad a gene expression file .</li>
+            </ul>
+        </div>
+    </div>
+    <a data-toggle="collapse" data-target="#draw_pca_introduction" href="###" class="collapsed"
+       aria-expanded="false">
+        <p class="text-center">--- Help ---</p>
+    </a>
+    <div class="row">
+
+        <div class="col-sm-4">
+            <label>Upload a Gene Expression matrix：</label>
+            <br>
+            <input type="file" class="input-file" name="upgenematrix" id="fpkm_upload_pca">
+            <br>
+            <button type="button" class="btn btn-primary btn-xs" onclick="FpkmUploadPCA()"
+                    name="upload_fpkm_pca" value="upload_fpkm_pca_submit"
+                    id="upload_fpkm_pca">Upload
+            </button>
+        </div>
+        <div class="col-sm-4">
+            <label class="control-label">number of components </label>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="components2" id="components2" value="2">
+                    2 components
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="components3" id="components3" value="3">
+                    3 components
+                </label>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <span class="help-block">Draw pca.</span>
+            <button type="button" class="btn btn-primary" onclick="draw_pca()"
+                    name="draw_pca_button" value="draw"
+                    id="draw_pca_button">Plot
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="/static/JS/clear.js"></script>
+<script>
+    $("input:radio").click(function(){
+				var domName = $(this).attr('name');//获取当前单选框控件name 属性值
+				var checkedState = $(this).attr('checked');//记录当前选中状态
+				$("input:radio[name='" + domName + "']").attr('checked',false);//1.
+				$(this).attr('checked',true);//2.
+				if(checkedState == 'checked'){
+					$(this).attr('checked',false); //3.
+				}
+			});
+
+    function FpkmUploadPCA() {
+        var form_data = new FormData();
+        var file_info = $('#fpkm_upload_pca')[0].files[0];
+        form_data.append('file', file_info);
+        $.ajax({
+            url: 'upload_fpkm',
+            type: 'POST',
+            data: form_data,
+            processData: false,  // tell jquery not to process the data
+            contentType: false, // tell jquery not to set contentType
+            beforeSend: function () {
+                $("#loading").css('display', 'block');
+            },
+            complete: function () {
+                $("#loading").css('display', 'none');
+            },
+            success: function (callback) {
+                alert("成功上传文件");
+                console.log("Success:" + callback);
+                $("#draw_pca_button").val(callback);
+            }
+        });
+    }
+    function draw_pca() {
+
+        if($("#components2").is(":checked")){
+            var components2 = $("#components2").val();
+        }else{
+            var components2 = 0;
+        }
+
+        if ($("#components3").is(":checked")){
+            var components3 = $("#components3").val();
+        }else{
+            var components3 = 0;
+        }
+        var fpkm_file = $("#draw_pca_button").val();
+        $.ajax({
+            type: "POST",
+            url: 'draw_pca',
+            data: {
+                'components2': components2,
+                'components3': components3,
+                'fpkm':fpkm_file,
+            },
+            dateType: "json",
+            beforeSend: function () {
+                $("#loading").css('display', 'block');
+            },
+            complete: function () {
+                $("#loading").css('display', 'none');
+            },
+            success: function (result) {
+                console.log(result);
+                {#判断返回的数据类型，如果为字符串就说明后台返回错误，如果为字典就是正确#}
+                console.log($.type(result));
+                if ($.type(result) == "string") {
+                    alert("只能选择一种主成分或者上传的文件不对");
+                    $("#pca_load").load("pca");
+                    $("#iframe").css('display', 'none');
+                } else {
+                    var pic = result['pic'];
+                    $("#iframe").attr('src', "/static/" + pic);
+                    $("#iframe").show();
+                }
+            },
+        });
+
+
+    }
+</script>
